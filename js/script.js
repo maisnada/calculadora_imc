@@ -51,22 +51,14 @@ function calculaImc(peso, altura){
         
         function formatDate(date){
 
-            let dateFormat = new Intl.DateTimeFormat('pt-BR', {dateStyle: 'short'}).format(date);
+            let dateFormat = new Intl.DateTimeFormat('pt-BR', {day: '2-digit', month: '2-digit', year: "2-digit"}).format(date);
             
-            let timeFormat = new Intl.DateTimeFormat('pt-BR', {timeStyle: 'short'}).format(date);
+            let timeFormat = new Intl.DateTimeFormat('pt-BR', {timeStyle: 'medium'}).format(date);
 
-            return `${dateFormat} - ${timeFormat.replace(':','h')}`;
+            return `${dateFormat} - ${timeFormat}`;
         }
 
-        function handleForm(event){
-
-            event.preventDefault();
-
-            let nome = form.nome.value;
-            let altura = parseFloat(form.altura.value.replace(',','.'));
-            let peso = parseFloat(form.peso.value.replace(',','.'));
-
-            let imc = calculaImc(peso,altura);           
+        function criarLinhaTabela(registro){
 
             let linha = document.createElement('tr');
 
@@ -78,17 +70,17 @@ function calculaImc(peso, altura){
             let colunaImc = document.createElement('td');
             let colunaClassificacao = document.createElement('td');
 
-            colunaId.innerText = count;
+            colunaId.innerText = registro.id;
             colunaId.setAttribute('scope', 'row');
 
-            colunaData.innerText = formatDate(new Date());
+            colunaData.innerText = formatDate(registro.data);
 
-            colunaNome.innerText = nome;
-            colunaAltura.innerText = altura;
-            colunaPeso.innerText = peso;
-            colunaImc.innerText = imc;
+            colunaNome.innerText = registro.nome;
+            colunaAltura.innerText = registro.altura;
+            colunaPeso.innerText = registro.peso;
+            colunaImc.innerText = registro.imc;
 
-            let classificacao = classificarImc(imc);               
+            let classificacao = classificarImc(registro.imc);               
            
             colunaClassificacao.innerText = classificacao;   
 
@@ -102,26 +94,93 @@ function calculaImc(peso, altura){
             linha.appendChild(colunaImc);            
             linha.appendChild(colunaClassificacao);     
            
-            tabela.prepend(linha);
+            tabela.prepend(linha);  
+        }
 
-            let linhas = document.querySelectorAll('table tr');
+        function getCount(){
 
-            console.log(linhas);
+            if(localStorage.getItem("dados")){
+
+                let dados = JSON.parse(localStorage.getItem("dados"));
+
+                return dados.length + 1;                
+            }
+
+            return 1;
+        }
+
+        function handleForm(event){            
+
+            event.preventDefault();
+
+            let nome = form.nome.value;
+            let altura = parseFloat(form.altura.value.replace(',','.'));
+            let peso = parseFloat(form.peso.value.replace(',','.'));
+
+            let imc = calculaImc(peso,altura);
+            let classificacao = classificarImc(imc);   
+
+            let registro = {
+                id: getCount(),
+                data: new Date(),
+                nome:nome,
+                altura:altura,
+                peso:peso,
+                imc:imc, 
+                classificacao:classificacao
+            }
+
+            criarLinhaTabela(registro);   
+
+            if(localStorage.getItem("dados")){
+
+                let dados = JSON.parse(localStorage.getItem("dados"));
+
+                dados.push(registro);  
+                
+                localStorage.setItem("dados", JSON.stringify(dados));
+
+            }else{                          
+
+                localStorage.setItem("dados", JSON.stringify(new Array(registro)));
+            }            
+
+           if(localStorage.getItem("dados")){
+
+                let dados = JSON.parse(localStorage.getItem("dados"));             
+                               
+            }
 
             form.nome.value = '';
             form.altura.value = '';
-            form.peso.value = '';
-
-            count++;
+            form.peso.value = '';    
+            
+            form.nome.focus();
+            
         }
 
-        let form = document.querySelector('form');
+        let form = document.querySelector('form');  
+        
+        form.nome.focus();
 
         let btn = form.querySelector('button');
 
         let tabela = document.querySelector('table tbody');   
        
-        btn.addEventListener('click', handleForm);
+        btn.addEventListener('click', handleForm);        
+        
+        if(localStorage.getItem("dados")){
 
-        let count = 1;
+            let dados = JSON.parse(localStorage.getItem("dados"));
+
+            dados.forEach((d) => {
+
+                d.data = new Date(d.data);               
+
+                criarLinhaTabela(d);  
+            });           
+             
+        }
+       
+
         
