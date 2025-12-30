@@ -69,6 +69,7 @@ function calculaImc(peso, altura){
             let colunaPeso = document.createElement('td');
             let colunaImc = document.createElement('td');
             let colunaClassificacao = document.createElement('td');
+            let colunaAcao = document.createElement('td');
 
             colunaId.innerText = registro.id;
             colunaId.setAttribute('scope', 'row');
@@ -84,7 +85,9 @@ function calculaImc(peso, altura){
            
             colunaClassificacao.innerText = classificacao;   
 
-            colunaClassificacao.classList.add(destaque(classificacao));    
+            colunaClassificacao.classList.add(destaque(classificacao)); 
+            
+            colunaAcao.innerHTML = `<a href="excluir/${registro.id}" data-id="${registro.id}" class="">Excluir</a> | <a href="editar/${registro.id}" data-id="${registro.id}">Editar</a>`;
 
             linha.appendChild(colunaId);
             linha.appendChild(colunaData);
@@ -93,8 +96,51 @@ function calculaImc(peso, altura){
             linha.appendChild(colunaPeso);
             linha.appendChild(colunaImc);            
             linha.appendChild(colunaClassificacao);     
+            linha.appendChild(colunaAcao);     
            
-            tabela.prepend(linha);  
+            tabela.prepend(linha); 
+            
+            linha.addEventListener('click', (event) => {
+
+                event.preventDefault();
+
+                if(event.target.href){
+                    
+                    console.log(event.target.href);
+
+                    console.log(event.target.dataset.id); 
+
+                    if(event.target.href.includes('excluir')){
+
+                        console.log('excluir');
+                        return;
+                    }
+
+                    console.log('editar');
+                    editar(event.target.dataset.id);
+
+
+                }else{
+
+                    console.log(event.target); 
+                }
+            })
+        }
+
+        function editar(id){
+
+            let dados = JSON.parse(localStorage.getItem("dados"));
+
+            let registro = dados[id - 1];
+
+            console.log(registro);
+
+            form.id.value = registro.id;
+
+            form.nome.value = registro.nome;
+            form.altura.value = registro.altura.toString().replace('.',',');
+            form.peso.value = registro.peso.toString().replace('.',',');  
+            
         }
 
         function getCount(){
@@ -103,10 +149,76 @@ function calculaImc(peso, altura){
 
                 let dados = JSON.parse(localStorage.getItem("dados"));
 
-                return dados.length + 1;                
+                return ++dados.length;                
             }
 
             return 1;
+        }
+
+        function salvar(registro){
+
+            if(localStorage.getItem("dados")){
+
+                let dados = JSON.parse(localStorage.getItem("dados"));
+
+                dados.push(registro);  
+                
+                localStorage.setItem("dados", JSON.stringify(dados));
+
+                return;
+            }
+
+            localStorage.setItem("dados", JSON.stringify(new Array(registro)));            
+        }
+
+        function atualizar(registro){
+
+            if(localStorage.getItem("dados")){
+
+                let dados = JSON.parse(localStorage.getItem("dados"));
+
+                let index = registro.id - 1;
+
+                dados[index].data = registro.data;
+                dados[index].nome = registro.nome;
+                dados[index].altura = registro.altura;
+                dados[index].peso = registro.peso;
+                dados[index].imc = registro.imc;
+                dados[index].classificacao = registro.classificacao;
+                
+                localStorage.setItem("dados", JSON.stringify(dados));
+            }
+
+            let arr = Array.from(tabela.children);
+
+            arr.forEach((linha) => linha.remove());
+
+            carregarDados();
+        }
+
+        function resetForm(){
+
+            form.id.value = '';
+            form.nome.value = '';
+            form.altura.value = '';
+            form.peso.value = '';    
+            
+            form.nome.focus();
+        }
+
+        function carregarDados(){
+
+            if(localStorage.getItem("dados")){
+
+                let dados = JSON.parse(localStorage.getItem("dados"));
+
+                dados.forEach((d) => {
+
+                    d.data = new Date(d.data);               
+
+                    criarLinhaTabela(d);  
+                }); 
+            }
         }
 
         function handleForm(event){            
@@ -121,7 +233,7 @@ function calculaImc(peso, altura){
             let classificacao = classificarImc(imc);   
 
             let registro = {
-                id: getCount(),
+                id: form.id.value ? form.id.value : getCount(),
                 data: new Date(),
                 nome:nome,
                 altura:altura,
@@ -130,33 +242,23 @@ function calculaImc(peso, altura){
                 classificacao:classificacao
             }
 
-            criarLinhaTabela(registro);   
+            console.log(registro);
+            
+            if(form.id.value){
 
-            if(localStorage.getItem("dados")){
+                console.log('editar!!');
 
-                let dados = JSON.parse(localStorage.getItem("dados"));
+                atualizar(registro);
 
-                dados.push(registro);  
+            }else{
                 
-                localStorage.setItem("dados", JSON.stringify(dados));
-
-            }else{                          
-
-                localStorage.setItem("dados", JSON.stringify(new Array(registro)));
-            }            
-
-           if(localStorage.getItem("dados")){
-
-                let dados = JSON.parse(localStorage.getItem("dados"));             
-                               
+                criarLinhaTabela(registro); 
+                
+                salvar(registro); 
             }
 
-            form.nome.value = '';
-            form.altura.value = '';
-            form.peso.value = '';    
-            
-            form.nome.focus();
-            
+            resetForm();
+
         }
 
         let form = document.querySelector('form');  
@@ -169,18 +271,7 @@ function calculaImc(peso, altura){
        
         btn.addEventListener('click', handleForm);        
         
-        if(localStorage.getItem("dados")){
-
-            let dados = JSON.parse(localStorage.getItem("dados"));
-
-            dados.forEach((d) => {
-
-                d.data = new Date(d.data);               
-
-                criarLinhaTabela(d);  
-            });           
-             
-        }
+        carregarDados();
        
 
         
