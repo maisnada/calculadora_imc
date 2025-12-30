@@ -1,277 +1,249 @@
-function calculaImc(peso, altura){
-           
-            return (peso / Math.pow(altura,2)).toFixed(2);
-        }
+function calculaImc(peso, altura) {
+  return (peso / Math.pow(altura, 2)).toFixed(2);
+}
 
-        function classificarImc(imc){
-          
-            let classificacao = 'Obesidade Grau III (Mórbida)';
+function classificarImc(imc) {
+  let classificacao = "Obesidade Grau III (Mórbida)";
 
-            if(imc < 18.5){
+  if (imc < 18.5) {
+    classificacao = "Abaixo do peso";
+  }
 
-                classificacao = 'Abaixo do peso';
-            }
+  if (imc >= 18.5 && imc <= 24.9) {
+    classificacao = "Peso Normal";
+  }
 
-            if(imc >= 18.5 && imc <= 24.9){
+  if (imc >= 25 && imc <= 29.9) {
+    classificacao = "Sobrepeso";
+  }
 
-                classificacao = 'Peso Normal';
-            }
+  if (imc >= 30 && imc <= 34.9) {
+    classificacao = "Obesidade Grau I";
+  }
 
-            if(imc >= 25 && imc <= 29.9){
+  if (imc >= 35 && imc <= 39.9) {
+    classificacao = "Obesidade Grau II";
+  }
 
-                classificacao = 'Sobrepeso';
-            }
+  return classificacao;
+}
 
-            if(imc >= 30 && imc <= 34.9){
+function destaque(classificacao) {
+  let arr = [];
 
-                classificacao = 'Obesidade Grau I';
-            }
+  arr["Abaixo do peso"] = "text-danger";
+  arr["Peso Normal"] = "text-success";
+  arr["Sobrepeso"] = "text-success";
+  arr["Obesidade Grau I"] = "text-warning";
+  arr["Obesidade Grau II"] = "text-danger";
+  arr["Obesidade Grau III (Mórbida)"] = "text-danger";
 
-            if(imc >= 35 && imc <= 39.9){
+  return arr[classificacao];
+}
 
-                classificacao = 'Obesidade Grau II';
-            }
+function formatDate(date) {
+  let dateFormat = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }).format(date);
 
-            return classificacao;
-        }
+  let timeFormat = new Intl.DateTimeFormat("pt-BR", {
+    timeStyle: "medium",
+  }).format(date);
 
-        function destaque(classificacao){
+  return `${dateFormat} - ${timeFormat}`;
+}
 
-            let arr = [];
-            
-            arr['Abaixo do peso'] = 'text-danger';
-            arr['Peso Normal'] = 'text-success';
-            arr['Sobrepeso'] = 'text-success';
-            arr['Obesidade Grau I'] = 'text-warning';
-            arr['Obesidade Grau II'] = 'text-danger';
-            arr['Obesidade Grau III (Mórbida)'] = 'text-danger';
+function criarLinhaTabela(registro) {
+  let linha = document.createElement("tr");
 
-            return arr[classificacao]; 
-        }
-        
-        function formatDate(date){
+  let colunaId = document.createElement("th");
+  let colunaData = document.createElement("td");
+  let colunaNome = document.createElement("td");
+  let colunaAltura = document.createElement("td");
+  let colunaPeso = document.createElement("td");
+  let colunaImc = document.createElement("td");
+  let colunaClassificacao = document.createElement("td");
+  let colunaAcao = document.createElement("td");
 
-            let dateFormat = new Intl.DateTimeFormat('pt-BR', {day: '2-digit', month: '2-digit', year: "2-digit"}).format(date);
-            
-            let timeFormat = new Intl.DateTimeFormat('pt-BR', {timeStyle: 'medium'}).format(date);
+  colunaId.innerText = registro.id;
+  colunaId.setAttribute("scope", "row");
 
-            return `${dateFormat} - ${timeFormat}`;
-        }
+  colunaData.innerText = formatDate(registro.data);
 
-        function criarLinhaTabela(registro){
+  colunaNome.innerText = registro.nome;
+  colunaAltura.innerText = registro.altura;
+  colunaPeso.innerText = registro.peso;
+  colunaImc.innerText = registro.imc;
 
-            let linha = document.createElement('tr');
+  let classificacao = classificarImc(registro.imc);
 
-            let colunaId = document.createElement('th');
-            let colunaData = document.createElement('td');
-            let colunaNome = document.createElement('td');
-            let colunaAltura = document.createElement('td');
-            let colunaPeso = document.createElement('td');
-            let colunaImc = document.createElement('td');
-            let colunaClassificacao = document.createElement('td');
-            let colunaAcao = document.createElement('td');
+  colunaClassificacao.innerText = classificacao;
 
-            colunaId.innerText = registro.id;
-            colunaId.setAttribute('scope', 'row');
+  colunaClassificacao.classList.add(destaque(classificacao));
 
-            colunaData.innerText = formatDate(registro.data);
+  colunaAcao.innerHTML = `<a href="excluir/${registro.id}" data-id="${registro.id}" class="">Excluir</a> | <a href="editar/${registro.id}" data-id="${registro.id}">Editar</a>`;
 
-            colunaNome.innerText = registro.nome;
-            colunaAltura.innerText = registro.altura;
-            colunaPeso.innerText = registro.peso;
-            colunaImc.innerText = registro.imc;
+  linha.appendChild(colunaId);
+  linha.appendChild(colunaData);
+  linha.appendChild(colunaNome);
+  linha.appendChild(colunaAltura);
+  linha.appendChild(colunaPeso);
+  linha.appendChild(colunaImc);
+  linha.appendChild(colunaClassificacao);
+  linha.appendChild(colunaAcao);
 
-            let classificacao = classificarImc(registro.imc);               
-           
-            colunaClassificacao.innerText = classificacao;   
+  tabela.prepend(linha);
 
-            colunaClassificacao.classList.add(destaque(classificacao)); 
-            
-            colunaAcao.innerHTML = `<a href="excluir/${registro.id}" data-id="${registro.id}" class="">Excluir</a> | <a href="editar/${registro.id}" data-id="${registro.id}">Editar</a>`;
+  linha.addEventListener("click", (event) => {
+    event.preventDefault();
 
-            linha.appendChild(colunaId);
-            linha.appendChild(colunaData);
-            linha.appendChild(colunaNome);
-            linha.appendChild(colunaAltura);
-            linha.appendChild(colunaPeso);
-            linha.appendChild(colunaImc);            
-            linha.appendChild(colunaClassificacao);     
-            linha.appendChild(colunaAcao);     
-           
-            tabela.prepend(linha); 
-            
-            linha.addEventListener('click', (event) => {
+    if (event.target.href) {
+      console.log(event.target.href);
 
-                event.preventDefault();
+      console.log(event.target.dataset.id);
 
-                if(event.target.href){
-                    
-                    console.log(event.target.href);
+      if (event.target.href.includes("excluir")) {
+        console.log("excluir");
 
-                    console.log(event.target.dataset.id); 
+        return;
+      }
 
-                    if(event.target.href.includes('excluir')){
+      console.log("editar");
+      editar(event.target.dataset.id);
+    } else {
+      console.log(event.target);
+    }
+  });
+}
 
-                        console.log('excluir');
-                        return;
-                    }
+function getDados() {
+  return JSON.parse(localStorage.getItem("dados"));
+}
 
-                    console.log('editar');
-                    editar(event.target.dataset.id);
+function editar(id) {
+  let dados = getDados();
 
+  let registro = dados[id - 1];
 
-                }else{
+  console.log(registro);
 
-                    console.log(event.target); 
-                }
-            })
-        }
+  form.id.value = registro.id;
 
-        function editar(id){
+  form.nome.value = registro.nome;
+  form.altura.value = registro.altura.toString().replace(".", ",");
+  form.peso.value = registro.peso.toString().replace(".", ",");
+}
 
-            let dados = JSON.parse(localStorage.getItem("dados"));
+function getCount() {
+  let dados = getDados();
+  if (dados) {
+    return ++dados.length;
+  }
 
-            let registro = dados[id - 1];
+  return 1;
+}
 
-            console.log(registro);
+function salvar(registro) {
+  let dados = getDados();
 
-            form.id.value = registro.id;
+  if (dados) {
+    dados.push(registro);
 
-            form.nome.value = registro.nome;
-            form.altura.value = registro.altura.toString().replace('.',',');
-            form.peso.value = registro.peso.toString().replace('.',',');  
-            
-        }
+    localStorage.setItem("dados", JSON.stringify(dados));
 
-        function getCount(){
+    return;
+  }
 
-            if(localStorage.getItem("dados")){
+  localStorage.setItem("dados", JSON.stringify(new Array(registro)));
+}
 
-                let dados = JSON.parse(localStorage.getItem("dados"));
+function atualizar(registro) {
+  let dados = getDados();
 
-                return ++dados.length;                
-            }
+  if (dados) {
+    let index = registro.id - 1;
 
-            return 1;
-        }
+    dados[index].data = registro.data;
+    dados[index].nome = registro.nome;
+    dados[index].altura = registro.altura;
+    dados[index].peso = registro.peso;
+    dados[index].imc = registro.imc;
+    dados[index].classificacao = registro.classificacao;
 
-        function salvar(registro){
+    localStorage.setItem("dados", JSON.stringify(dados));
+  }
 
-            if(localStorage.getItem("dados")){
+  let arr = Array.from(tabela.children);
 
-                let dados = JSON.parse(localStorage.getItem("dados"));
+  arr.forEach((linha) => linha.remove());
 
-                dados.push(registro);  
-                
-                localStorage.setItem("dados", JSON.stringify(dados));
+  carregarDados();
+}
 
-                return;
-            }
+function resetForm() {
+  form.id.value = "";
+  form.nome.value = "";
+  form.altura.value = "";
+  form.peso.value = "";
 
-            localStorage.setItem("dados", JSON.stringify(new Array(registro)));            
-        }
+  form.nome.focus();
+}
 
-        function atualizar(registro){
+function carregarDados() {
+  let dados = getDados();
 
-            if(localStorage.getItem("dados")){
+  if (dados) {
+    dados.forEach((d) => {
+      d.data = new Date(d.data);
 
-                let dados = JSON.parse(localStorage.getItem("dados"));
+      criarLinhaTabela(d);
+    });
+  }
+}
 
-                let index = registro.id - 1;
+function handleForm(event) {
+  event.preventDefault();
 
-                dados[index].data = registro.data;
-                dados[index].nome = registro.nome;
-                dados[index].altura = registro.altura;
-                dados[index].peso = registro.peso;
-                dados[index].imc = registro.imc;
-                dados[index].classificacao = registro.classificacao;
-                
-                localStorage.setItem("dados", JSON.stringify(dados));
-            }
+  let nome = form.nome.value;
+  let altura = parseFloat(form.altura.value.replace(",", "."));
+  let peso = parseFloat(form.peso.value.replace(",", "."));
 
-            let arr = Array.from(tabela.children);
+  let imc = calculaImc(peso, altura);
+  let classificacao = classificarImc(imc);
 
-            arr.forEach((linha) => linha.remove());
+  let registro = {
+    id: form.id.value ? form.id.value : getCount(),
+    data: new Date(),
+    nome: nome,
+    altura: altura,
+    peso: peso,
+    imc: imc,
+    classificacao: classificacao,
+  };
 
-            carregarDados();
-        }
+  if (form.id.value) {
+    console.log("editar!!");
 
-        function resetForm(){
+    atualizar(registro);
+  } else {
+    criarLinhaTabela(registro);
 
-            form.id.value = '';
-            form.nome.value = '';
-            form.altura.value = '';
-            form.peso.value = '';    
-            
-            form.nome.focus();
-        }
+    salvar(registro);
+  }
 
-        function carregarDados(){
+  resetForm();
+}
 
-            if(localStorage.getItem("dados")){
+let form = document.querySelector("form");
 
-                let dados = JSON.parse(localStorage.getItem("dados"));
+form.nome.focus();
 
-                dados.forEach((d) => {
+let btn = form.querySelector("button");
 
-                    d.data = new Date(d.data);               
+let tabela = document.querySelector("table tbody");
 
-                    criarLinhaTabela(d);  
-                }); 
-            }
-        }
+btn.addEventListener("click", handleForm);
 
-        function handleForm(event){            
-
-            event.preventDefault();
-
-            let nome = form.nome.value;
-            let altura = parseFloat(form.altura.value.replace(',','.'));
-            let peso = parseFloat(form.peso.value.replace(',','.'));
-
-            let imc = calculaImc(peso,altura);
-            let classificacao = classificarImc(imc);   
-
-            let registro = {
-                id: form.id.value ? form.id.value : getCount(),
-                data: new Date(),
-                nome:nome,
-                altura:altura,
-                peso:peso,
-                imc:imc, 
-                classificacao:classificacao
-            }
-
-            console.log(registro);
-            
-            if(form.id.value){
-
-                console.log('editar!!');
-
-                atualizar(registro);
-
-            }else{
-                
-                criarLinhaTabela(registro); 
-                
-                salvar(registro); 
-            }
-
-            resetForm();
-
-        }
-
-        let form = document.querySelector('form');  
-        
-        form.nome.focus();
-
-        let btn = form.querySelector('button');
-
-        let tabela = document.querySelector('table tbody');   
-       
-        btn.addEventListener('click', handleForm);        
-        
-        carregarDados();
-       
-
-        
+carregarDados();
