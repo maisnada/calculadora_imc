@@ -3,26 +3,26 @@ function calculaImc(peso, altura) {
 }
 
 function classificarImc(imc) {
-  let classificacao = "Obesidade Grau III (Mórbida)";
+  let classificacao = 'Obesidade Grau III (Mórbida)';
 
   if (imc < 18.5) {
-    classificacao = "Abaixo do peso";
+    classificacao = 'Abaixo do peso';
   }
 
   if (imc >= 18.5 && imc <= 24.9) {
-    classificacao = "Peso Normal";
+    classificacao = 'Peso Normal';
   }
 
   if (imc >= 25 && imc <= 29.9) {
-    classificacao = "Sobrepeso";
+    classificacao = 'Sobrepeso';
   }
 
   if (imc >= 30 && imc <= 34.9) {
-    classificacao = "Obesidade Grau I";
+    classificacao = 'Obesidade Grau I';
   }
 
   if (imc >= 35 && imc <= 39.9) {
-    classificacao = "Obesidade Grau II";
+    classificacao = 'Obesidade Grau II';
   }
 
   return classificacao;
@@ -31,44 +31,44 @@ function classificarImc(imc) {
 function destaque(classificacao) {
   let arr = [];
 
-  arr["Abaixo do peso"] = "text-danger";
-  arr["Peso Normal"] = "text-success";
-  arr["Sobrepeso"] = "text-success";
-  arr["Obesidade Grau I"] = "text-warning";
-  arr["Obesidade Grau II"] = "text-danger";
-  arr["Obesidade Grau III (Mórbida)"] = "text-danger";
+  arr['Abaixo do peso'] = 'text-danger';
+  arr['Peso Normal'] = 'text-success';
+  arr['Sobrepeso'] = 'text-success';
+  arr['Obesidade Grau I'] = 'text-warning';
+  arr['Obesidade Grau II'] = 'text-danger';
+  arr['Obesidade Grau III (Mórbida)'] = 'text-danger';
 
   return arr[classificacao];
 }
 
 function formatDate(date) {
-  let dateFormat = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
+  let dateFormat = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
   }).format(date);
 
-  let timeFormat = new Intl.DateTimeFormat("pt-BR", {
-    timeStyle: "medium",
+  let timeFormat = new Intl.DateTimeFormat('pt-BR', {
+    timeStyle: 'medium',
   }).format(date);
 
   return `${dateFormat} - ${timeFormat}`;
 }
 
 function criarLinhaTabela(registro) {
-  let linha = document.createElement("tr");
+  let linha = document.createElement('tr');
 
-  let colunaId = document.createElement("th");
-  let colunaData = document.createElement("td");
-  let colunaNome = document.createElement("td");
-  let colunaAltura = document.createElement("td");
-  let colunaPeso = document.createElement("td");
-  let colunaImc = document.createElement("td");
-  let colunaClassificacao = document.createElement("td");
-  let colunaAcao = document.createElement("td");
+  let colunaId = document.createElement('th');
+  let colunaData = document.createElement('td');
+  let colunaNome = document.createElement('td');
+  let colunaAltura = document.createElement('td');
+  let colunaPeso = document.createElement('td');
+  let colunaImc = document.createElement('td');
+  let colunaClassificacao = document.createElement('td');
+  let colunaAcao = document.createElement('td');
 
   colunaId.innerText = registro.id;
-  colunaId.setAttribute("scope", "row");
+  colunaId.setAttribute('scope', 'row');
 
   colunaData.innerText = formatDate(registro.data);
 
@@ -96,7 +96,7 @@ function criarLinhaTabela(registro) {
 
   tabela.prepend(linha);
 
-  linha.addEventListener("click", (event) => {
+  linha.addEventListener('click', (event) => {
     event.preventDefault();
 
     if (event.target.parentElement.href) {
@@ -104,7 +104,7 @@ function criarLinhaTabela(registro) {
 
       let id = event.target.parentElement.dataset.id;
 
-      if (href.includes("excluir")) {
+      if (href.includes('excluir')) {
         excluir(id);
       } else {
         editar(id);
@@ -114,11 +114,11 @@ function criarLinhaTabela(registro) {
 }
 
 function store(dados) {
-  localStorage.setItem("dados", JSON.stringify(dados));
+  localStorage.setItem('dados', JSON.stringify(dados));
 }
 
 function getDados() {
-  return JSON.parse(localStorage.getItem("dados"));
+  return JSON.parse(localStorage.getItem('dados'));
 }
 
 function getRegistro(id) {
@@ -139,8 +139,8 @@ function editar(id) {
   form.id.value = registro.id;
 
   form.nome.value = registro.nome;
-  form.altura.value = registro.altura.toString().replace(".", ",");
-  form.peso.value = registro.peso.toString().replace(".", ",");
+  form.altura.value = registro.altura.toString().replace('.', ',');
+  form.peso.value = registro.peso.toString().replace('.', ',');
 }
 
 function excluir(id) {
@@ -197,10 +197,10 @@ function atualizar(registroAtualizado) {
 }
 
 function resetForm() {
-  form.id.value = "";
-  form.nome.value = "";
-  form.altura.value = "";
-  form.peso.value = "";
+  form.id.value = '';
+  form.nome.value = '';
+  form.altura.value = '';
+  form.peso.value = '';
 
   form.nome.focus();
 }
@@ -212,15 +212,15 @@ function limparTabela() {
 }
 
 function semRegistros() {
-  let linha = document.createElement("tr");
+  let linha = document.createElement('tr');
 
-  let colunaData = document.createElement("td");
+  let colunaData = document.createElement('td');
 
-  colunaData.innerText = "Sem registros";
+  colunaData.innerText = 'Sem registros';
 
-  colunaData.setAttribute("colspan", 8);
+  colunaData.setAttribute('colspan', 8);
 
-  colunaData.classList.add("text-center");
+  colunaData.classList.add('text-center');
 
   linha.appendChild(colunaData);
 
@@ -250,76 +250,95 @@ function capitalize(nome) {
 }
 
 function campoObrigatorio(campo) {
-  campo.classList.toggle("ocultar");
+  campo.classList.toggle('ocultar');
 
   setTimeout(() => {
-    campo.classList.toggle("ocultar");
+    campo.classList.toggle('ocultar');
   }, 3000);
+}
+
+function getCamposForm(form) {
+  let nome = form.nome.value;
+  let altura = parseFloat(form.altura.value.replace(',', '.')).toFixed(2);
+  let peso = parseFloat(form.peso.value.replace(',', '.')).toFixed(2);
+
+  return { nome, altura, peso };
+}
+
+function isCamposValidos(form) {
+  let campos = getCamposForm(form);
+
+  if (!campos.nome) {
+    let erroNome = document.querySelector('#erroNome');
+
+    campoObrigatorio(erroNome);
+
+    return false;
+  }
+
+  if (!campos.altura || isNaN(campos.altura)) {
+    let erroAltura = document.querySelector('#erroAltura');
+
+    campoObrigatorio(erroAltura);
+
+    return false;
+  }
+
+  if (!campos.peso || isNaN(campos.peso)) {
+    let erroPeso = document.querySelector('#erroPeso');
+
+    campoObrigatorio(erroPeso);
+
+    return false;
+  }
+
+  return true;
 }
 
 function handleForm(event) {
   event.preventDefault();
 
-  let nome = form.nome.value;
-  let altura = parseFloat(form.altura.value.replace(",", ".")).toFixed(2);
-  let peso = parseFloat(form.peso.value.replace(",", ".")).toFixed(2);
+  if (isCamposValidos(form)) {
+    let campos = getCamposForm(form);
 
-  if (!nome) {
-    let erroNome = document.querySelector("#erroNome");
+    let imc = calculaImc(campos.peso, campos.altura);
+    let classificacao = classificarImc(imc);
 
-    campoObrigatorio(erroNome);
+    let registro = {
+      id: form.id.value ? form.id.value : getCount(),
+      data: new Date(),
+      nome: capitalize(campos.nome),
+      altura: campos.altura,
+      peso: campos.peso,
+      imc: imc,
+      classificacao: classificacao,
+    };
 
-    return;
+    if (form.id.value) {
+      atualizar(registro);
+    } else {
+      salvar(registro);
+    }
+
+    carregarDados();
+    resetForm();
   }
-
-  if (!altura || isNaN(altura)) {
-    let erroAltura = document.querySelector("#erroAltura");
-
-    campoObrigatorio(erroAltura);
-  }
-
-  if (!peso || isNaN(peso)) {
-    let erroPeso = document.querySelector("#erroPeso");
-
-    campoObrigatorio(erroPeso);
-
-    return;
-  }
-
-  return;
-
-  let imc = calculaImc(peso, altura);
-  let classificacao = classificarImc(imc);
-
-  let registro = {
-    id: form.id.value ? form.id.value : getCount(),
-    data: new Date(),
-    nome: capitalize(nome),
-    altura: altura,
-    peso: peso,
-    imc: imc,
-    classificacao: classificacao,
-  };
-
-  if (form.id.value) {
-    atualizar(registro);
-  } else {
-    salvar(registro);
-  }
-
-  carregarDados();
-
-  resetForm();
 }
 
-let form = document.querySelector("form");
+function handleLimparTabela(event) {
+  event.preventDefault();
+
+  limparTabela();
+}
+
+let form = document.querySelector('form');
 
 form.nome.focus();
 
-let btn = form.querySelector("button");
+let btn = form.querySelector('button');
 
-let tabela = document.querySelector("table tbody");
+let tabela = document.querySelector('table tbody');
 
-btn.addEventListener("click", handleForm);
+btn.addEventListener('click', handleForm);
 
 carregarDados();
