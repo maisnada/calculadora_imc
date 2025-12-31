@@ -83,7 +83,7 @@ function criarLinhaTabela(registro) {
 
   colunaClassificacao.classList.add(destaque(classificacao));
 
-  colunaAcao.innerHTML = `<a href="excluir/${registro.id}" data-id="${registro.id}" class="">Excluir</a> | <a href="editar/${registro.id}" data-id="${registro.id}">Editar</a>`;
+  colunaAcao.innerHTML = `<a href="excluir/${registro.id}" data-id="${registro.id}"><i class="fa-regular fa-trash-can"></i></a><a href="editar/${registro.id}" data-id="${registro.id}"><i class="fa-regular fa-pen-to-square"></i></a>`;
 
   linha.appendChild(colunaId);
   linha.appendChild(colunaData);
@@ -99,11 +99,15 @@ function criarLinhaTabela(registro) {
   linha.addEventListener("click", (event) => {
     event.preventDefault();
 
-    if (event.target.href) {
-      if (event.target.href.includes("excluir")) {
-        excluir(event.target.dataset.id);
+    if (event.target.parentElement.href) {
+      let href = event.target.parentElement.href;
+
+      let id = event.target.parentElement.dataset.id;
+
+      if (href.includes("excluir")) {
+        excluir(id);
       } else {
-        editar(event.target.dataset.id);
+        editar(id);
       }
     }
   });
@@ -152,7 +156,7 @@ function excluir(id) {
 function getCount() {
   let dados = getDados();
 
-  if (dados) {
+  if (dados && dados.length) {
     let ids = dados.map((r) => r.id);
 
     return Math.max(...ids) + 1;
@@ -245,12 +249,44 @@ function capitalize(nome) {
     .toLowerCase()}`;
 }
 
+function campoObrigatorio(campo) {
+  campo.classList.toggle("ocultar");
+
+  setTimeout(() => {
+    campo.classList.toggle("ocultar");
+  }, 3000);
+}
+
 function handleForm(event) {
   event.preventDefault();
 
   let nome = form.nome.value;
   let altura = parseFloat(form.altura.value.replace(",", ".")).toFixed(2);
   let peso = parseFloat(form.peso.value.replace(",", ".")).toFixed(2);
+
+  if (!nome) {
+    let erroNome = document.querySelector("#erroNome");
+
+    campoObrigatorio(erroNome);
+
+    return;
+  }
+
+  if (!altura || isNaN(altura)) {
+    let erroAltura = document.querySelector("#erroAltura");
+
+    campoObrigatorio(erroAltura);
+  }
+
+  if (!peso || isNaN(peso)) {
+    let erroPeso = document.querySelector("#erroPeso");
+
+    campoObrigatorio(erroPeso);
+
+    return;
+  }
+
+  return;
 
   let imc = calculaImc(peso, altura);
   let classificacao = classificarImc(imc);
