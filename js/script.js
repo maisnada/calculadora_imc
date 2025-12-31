@@ -100,34 +100,37 @@ function criarLinhaTabela(registro) {
     event.preventDefault();
 
     if (event.target.href) {
-      console.log(event.target.href);
-
-      console.log(event.target.dataset.id);
-
       if (event.target.href.includes("excluir")) {
-        console.log("excluir");
-
-        return;
+        excluir(event.target.dataset.id);
+      } else {
+        editar(event.target.dataset.id);
       }
-
-      console.log("editar");
-      editar(event.target.dataset.id);
-    } else {
-      console.log(event.target);
     }
   });
+}
+
+function store(dados) {
+  localStorage.setItem("dados", JSON.stringify(dados));
 }
 
 function getDados() {
   return JSON.parse(localStorage.getItem("dados"));
 }
 
-function editar(id) {
+function getRegistro(id) {
   let dados = getDados();
 
-  let registro = dados[id - 1];
+  for (let i = 0; i < dados.length; i++) {
+    if (dados[i].id === parseInt(id)) {
+      return dados[i];
+    }
+  }
 
-  console.log(registro);
+  return null;
+}
+
+function editar(id) {
+  let registro = getRegistro(id);
 
   form.id.value = registro.id;
 
@@ -136,10 +139,23 @@ function editar(id) {
   form.peso.value = registro.peso.toString().replace(".", ",");
 }
 
+function excluir(id) {
+  let dados = getDados();
+
+  let dadosAtualizados = dados.filter((registro) => registro.id != id);
+
+  store(dadosAtualizados);
+
+  carregarDados();
+}
+
 function getCount() {
   let dados = getDados();
+
   if (dados) {
-    return ++dados.length;
+    let ids = dados.map((r) => r.id);
+
+    return Math.max(...ids) + 1;
   }
 
   return 1;
@@ -151,35 +167,29 @@ function salvar(registro) {
   if (dados) {
     dados.push(registro);
 
-    localStorage.setItem("dados", JSON.stringify(dados));
+    store(dados);
 
     return;
   }
 
-  localStorage.setItem("dados", JSON.stringify(new Array(registro)));
+  store(new Array(registro));
 }
 
-function atualizar(registro) {
+function atualizar(registroAtualizado) {
   let dados = getDados();
 
-  if (dados) {
-    let index = registro.id - 1;
+  dados.forEach((registro) => {
+    if (registro.id == registroAtualizado.id) {
+      registro.data = registroAtualizado.data;
+      registro.nome = registroAtualizado.nome;
+      registro.altura = registroAtualizado.altura;
+      registro.peso = registroAtualizado.peso;
+      registro.imc = registroAtualizado.imc;
+      registro.classificacao = registroAtualizado.classificacao;
+    }
+  });
 
-    dados[index].data = registro.data;
-    dados[index].nome = registro.nome;
-    dados[index].altura = registro.altura;
-    dados[index].peso = registro.peso;
-    dados[index].imc = registro.imc;
-    dados[index].classificacao = registro.classificacao;
-
-    localStorage.setItem("dados", JSON.stringify(dados));
-  }
-
-  let arr = Array.from(tabela.children);
-
-  arr.forEach((linha) => linha.remove());
-
-  carregarDados();
+  store(dados);
 }
 
 function resetForm() {
@@ -191,24 +201,56 @@ function resetForm() {
   form.nome.focus();
 }
 
+function limparTabela() {
+  let arr = Array.from(tabela.children);
+
+  arr.forEach((linha) => linha.remove());
+}
+
+function semRegistros() {
+  let linha = document.createElement("tr");
+
+  let colunaData = document.createElement("td");
+
+  colunaData.innerText = "Sem registros";
+
+  colunaData.setAttribute("colspan", 8);
+
+  colunaData.classList.add("text-center");
+
+  linha.appendChild(colunaData);
+
+  tabela.appendChild(linha);
+}
+
 function carregarDados() {
+  limparTabela();
+
   let dados = getDados();
 
-  if (dados) {
+  if (dados && dados.length) {
     dados.forEach((d) => {
       d.data = new Date(d.data);
 
       criarLinhaTabela(d);
     });
+  } else {
+    semRegistros();
   }
+}
+
+function capitalize(nome) {
+  return `${nome.charAt(0).toUpperCase()}${nome
+    .substring(1, nome.length)
+    .toLowerCase()}`;
 }
 
 function handleForm(event) {
   event.preventDefault();
 
   let nome = form.nome.value;
-  let altura = parseFloat(form.altura.value.replace(",", "."));
-  let peso = parseFloat(form.peso.value.replace(",", "."));
+  let altura = parseFloat(form.altura.value.replace(",", ".")).toFixed(2);
+  let peso = parseFloat(form.peso.value.replace(",", ".")).toFixed(2);
 
   let imc = calculaImc(peso, altura);
   let classificacao = classificarImc(imc);
@@ -216,7 +258,7 @@ function handleForm(event) {
   let registro = {
     id: form.id.value ? form.id.value : getCount(),
     data: new Date(),
-    nome: nome,
+    nome: capitalize(nome),
     altura: altura,
     peso: peso,
     imc: imc,
@@ -224,14 +266,12 @@ function handleForm(event) {
   };
 
   if (form.id.value) {
-    console.log("editar!!");
-
     atualizar(registro);
   } else {
-    criarLinhaTabela(registro);
-
     salvar(registro);
   }
+
+  carregarDados();
 
   resetForm();
 }
