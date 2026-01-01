@@ -1,0 +1,48 @@
+body {
+  background-color: #f1f0ef;
+  font-family: Roboto;
+  font-weight: 300;
+}
+
+h1 {
+  font-family: Quicksand;
+  font-weight: 400;
+}
+
+tr {
+  animation: slide 0.5s forwards;
+}
+
+@keyframes slide {
+  from {
+    opacity: 0;
+    transform: translate3d(-20px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+a {
+  margin-right: 20px;
+}
+
+.ocultar {
+  display: none;
+}
+
+.alerta {
+  color: red;
+  animation: fadeIn 0.8s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
