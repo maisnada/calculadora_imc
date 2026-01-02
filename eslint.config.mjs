@@ -14,6 +14,7 @@ export default [
         'functions',
         { blockScopedFunctions: 'disallow' },
       ],
+      //'no-unused-private-class-members': 'error',
     },
   },
 ];

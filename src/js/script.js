@@ -1,3 +1,8 @@
+import { Formulario } from './modules/formulario.js';
+
+let f = new Formulario(document);
+
+/*
 function calculaImc(peso, altura) {
   return (peso / Math.pow(altura, 2)).toFixed(2);
 }
@@ -341,4 +346,4 @@ let tabela = document.querySelector('table tbody');
 
 btn.addEventListener('click', handleForm);
 
-carregarDados();
+carregarDados();*/
