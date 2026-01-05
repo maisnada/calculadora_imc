@@ -1,4 +1,4 @@
-class Imc {
+export class Imc {
   #id;
   #nome;
   #data;
@@ -7,7 +7,8 @@ class Imc {
   #indice;
   #classificacao;
 
-  constructor(nome, peso, altura) {
+  constructor(id, nome, peso, altura) {
+    this.#id = id;
     this.#nome = nome;
     this.#data = new Date();
     this.#peso = parseFloat(peso);
@@ -46,35 +47,31 @@ class Imc {
     }
   }
 
-  setId(id) {
-    this.#id = id;
-  }
-
-  getId() {
+  get id() {
     return this.#id;
   }
 
-  getNome() {
+  get nome() {
     return this.#nome;
   }
 
-  getData() {
+  get data() {
     return this.#data;
   }
 
-  getPeso() {
+  get peso() {
     return this.#peso;
   }
 
-  getAltura() {
+  get altura() {
     return this.#altura;
   }
 
-  getIndice() {
+  get indice() {
     return this.#indice;
   }
 
-  getClassificacao() {
+  get classificacao() {
     return this.#classificacao;
   }
 
@@ -90,5 +87,3 @@ class Imc {
     };
   }
 }
-
-export { Imc };

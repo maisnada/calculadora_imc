@@ -2,11 +2,11 @@
   "name": "calculadora_imc",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --mode development --watch --entry ./src/js/script.js -o ./dist",
-    "build": "webpack --mode production --entry ./src/js/script.js -o ./dist"
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,15 @@
   },
   "homepage": "https://github.com/maisnada/calculadora_imc#readme",
   "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/plugin-transform-runtime": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/runtime": "^7.28.4",
+    "babel-loader": "^10.0.0",
+    "copy-webpack-plugin": "^13.0.1",
     "eslint": "^9.39.2",
+    "html-webpack-plugin": "^5.6.5",
+    "replace-in-file-webpack-plugin": "^1.0.6",
     "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1"
   }

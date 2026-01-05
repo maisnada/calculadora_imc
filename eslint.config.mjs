@@ -1,7 +1,7 @@
 export default [
   {
     rules: {
-      //'no-console': 'error',
+      'no-console': 'error',
       indent: ['error', 2],
       'keyword-spacing': 'error',
       'no-multiple-empty-lines': 'error',
@@ -14,7 +14,6 @@ export default [
         'functions',
         { blockScopedFunctions: 'disallow' },
       ],
-      //'no-unused-private-class-members': 'error',
     },
   },
 ];

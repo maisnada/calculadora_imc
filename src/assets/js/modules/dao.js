@@ -1,4 +1,4 @@
-class Dao {
+export class Dao {
   static #dataName = 'dados';
 
   static #getDataBase() {
@@ -33,6 +33,26 @@ class Dao {
     return 1;
   }
 
+  static list() {
+    let bd = this.#getDataBase();
+
+    if (!this.#isDataBaseEmpty()) {
+      return bd;
+    }
+  }
+
+  static get(id) {
+    let bd = this.#getDataBase();
+
+    for (let i = 0; i < bd.length; i++) {
+      if (bd[i].id === parseInt(id)) {
+        return bd[i];
+      }
+    }
+
+    return null;
+  }
+
   static #isDataBaseEmpty() {
     let bd = this.#getDataBase();
 
@@ -43,15 +63,25 @@ class Dao {
     return true;
   }
 
-  /*listar() {
-    return this.#getStorage();
+  static update(imcAtualizado) {
+    let db = this.#getDataBase();
+
+    let newDb = db.map((imc) => {
+      if (imc.id === imcAtualizado.id) {
+        return imcAtualizado;
+      }
+
+      return imc;
+    });
+
+    this.#updateDataBase(newDb);
   }
 
-  salvar(registro) {
-    let bd = this.#getStorage();
+  static delete(id) {
+    let db = this.#getDataBase();
 
-    bd.push(registro);
-  }*/
+    let newBd = db.filter((imc) => imc.id !== id);
+
+    this.#updateDataBase(newBd);
+  }
 }
-
-export { Dao };
