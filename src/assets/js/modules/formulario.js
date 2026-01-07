@@ -41,8 +41,6 @@ export class Formulario {
       let campos = this.#getValorCampos();
       this.#limparCampos();
       this.#cbSalvar(campos);
-    } else {
-      console.log('nao');
     }
   }
   #hadleInputSomenteNumeros(event) {

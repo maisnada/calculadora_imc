@@ -47,6 +47,10 @@ export class Imc {
     }
   }
 
+  #percentual(valor) {
+    return Math.round((valor / this.#peso) * 1000) / 10;
+  }
+
   get id() {
     return this.#id;
   }

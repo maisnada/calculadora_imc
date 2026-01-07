@@ -2,57 +2,62 @@
 
 Resumo rápido
 
-- Projeto: SPA vanilla JS (sem frameworks) para cálculo de IMC.
+- Projeto: SPA vanilla JS para cálculo de IMC (sem frameworks).
 - Entry: `src/assets/js/main.js` ? instancia `CalculadoraImc`.
 - Build: `npm run dev` (webpack --watch para desenvolvimento), `npm run build` (produção).
 
-Arquitetura — visão rápida (o "porquê")
+Arquitetura — visão rápida (o “porquê”)
 
-- Código organizado em módulos ES (pasta `src/assets/js/modules`). Cada módulo expõe uma classe com `export` nomeado (ex.: `CalculadoraImc`, `Dao`, `Tabela`, `Formulario`, `Imc`).
-- `CalculadoraImc` orquestra a aplicação: cria `Formulario`, `Tabela` e usa `Dao` para persistir dados.
-- Persistência: `Dao` grava em `localStorage` sob a chave `dados`. Isso significa que testes locais podem precisar limpar essa chave.
-- Build pipeline: `webpack` gera `dist/assets/js/main.bundle.js` e o conteúdo de `dist/` é copiado para `docs/` (usado como GitHub Pages). O plugin `ReplaceInFileWebpackPlugin` remove a tag `<script type="module">` do HTML gerado.
+- Código modular em `src/assets/js/modules/`. Cada arquivo exporta uma classe nomeada (ex.: `CalculadoraImc`, `Dao`, `Tabela`, `Formulario`, `Imc`).
+- `CalculadoraImc` orquestra: cria `Formulario`, `Tabela` e chama `Dao` para persistência.
+- Persistência: `Dao` serializa objetos via `toJSON()` e grava em `localStorage` sob a chave `dados`. Para testes locais, use `localStorage.removeItem('dados')`.
+- Pipeline: `webpack` gera `dist/assets/js/main.bundle.js` e copia `dist/` ? `docs/` (usado para GitHub Pages). O plugin `ReplaceInFileWebpackPlugin` remove o `<script type="module">` do HTML final.
 
-Padrões e convenções do projeto
+Padrões e convenções importantes
 
-- Estilo de código: classes com campos privados (p.ex. `#campo`), getters e métodos privados (prefixo `#`).
+- Estilo de código: classes com campos privados (`#campo`), getters públicos e métodos privados (`#metodo`). Preservar esse estilo facilita coerência com Babel/targets.
 - Export/Import: sempre `export class Nome {}` e `import { Nome } from './modules/nome.js'`.
-- DOM hooks: `Formulario` seleciona `form` por name/fields; `Tabela` assume que ações são âncoras com `href` contendo `excluir/{id}` ou `editar/{id}` (o click handler verifica `href` e `data-id`). Mantenha esse padrão ao alterar a UI.
-- Validação/formatação: `Formulario` normaliza `altura` e `peso` trocando `,` por `.`; mantenha esse comportamento quando consumir input.
-- Persistência/IDs: `Dao.getNextId()` calcula o próximo id com `Math.max(...ids)+1`; evite alterar esse comportamento sem migrar dados.
+- DOM / seletores: `Formulario` e `Tabela` dependem de nomes/structure específicos:
+  - Formulário espera inputs com `name`/`id`: `nome`, `altura`, `peso`, `id` (hidden).
+  - Tabela seleciona `table tbody` e as ações usam âncoras com `href` contendo `excluir/{id}` ou `editar/{id}` e `data-id` (o handler extrai `data-id` do parentElement).
+  - Mantenha essas convenções ao modificar markup ou handlers.
+- Validação & formatação: `Formulario` normaliza `altura`/`peso` trocando `,` por `.` antes do parseFloat; preserve isso quando consumir valores.
+- IDs: `Dao.getNextId()` usa `Math.max(...ids)+1` — alterar isso impacta registros existentes.
 
-Ferramentas e comandos úteis
+Ferramentas, comandos e workflows
 
 - Instalar dependências: `npm install`
-- Desenvolvimento (watch): `npm run dev` — re-bundle automático; não há dev server embutido.
-- Produção: `npm run build` — cria `dist/` e atualiza `docs/`.
-- Preview: abra `dist/index.html` ou `docs/index.html` no navegador; confirme `assets/js/main.bundle.js` está carregado.
-- Lint: existe `eslint` configurado em `eslint.config.mjs` (regras: `semi`, `no-console: 'error'`, `indent: 2`, etc.). Não há script `npm run lint`; execute `npx eslint src/` manualmente se necessário.
+- Desenvolvimento (watch): `npm run dev` — re-bundle automático (não há dev server integrado).
+- Build produção: `npm run build` — atualiza `dist/` e copia para `docs/`.
+- Preview local: abrir `dist/index.html` ou `docs/index.html` no navegador; ou usar um servidor estático simples (`npx serve dist` ou `npx http-server dist`).
+- Lint: regras em `eslint.config.mjs` (ex.: `no-console: 'error'`, `semi`, `indent: 2`). Execute `npx eslint src/` e, se quiser aplicar correções, `npx eslint src/ --fix`.
+- Publicação (GitHub Pages): o conteúdo final está em `docs/` — garantir que GitHub Pages esteja configurado para publicar a pasta `docs/` (padrão do projeto).
 
-Arquivo(s)-chave para referência rápida
+PR checklist & sugestões práticas
 
-- `src/assets/js/main.js` — ponto de entrada
+- Rode `npm run build` e valide `docs/index.html`/`dist/index.html` antes de abrir PR. ?
+- Execute `npx eslint src/` e corrija violações; evite deixar `console.log` no código. ?
+- Valide manualmente fluxo crítico: inserir registro, editar, excluir e confirmar persistência em `localStorage` (limpe `dados` entre testes). ?
+- Ao modificar `Dao`, `Imc` ou `toJSON()`, considere migração de dados no `localStorage` ou documente a quebra de compatibilidade. ??
+
+Notas de implementação e pegadinhas
+
+- Há um `console.log('nao')` em `Formulario` usado para indicar erro de validação; remova ou converta para uma notificação adequada antes de PR.
+- Regex de nomes em `Formulario` usa suporte Unicode; revisar se for necessário aceitar outros alfabetos.
+- `Tabela` destaca classificações por string exata; se alterar textos de `Imc.classificacao`, atualize `Tabela.#destacarClassificacao`.
+
+Arquivos-chave (referência rápida)
+
+- `src/assets/js/main.js` — entry
 - `src/assets/js/modules/calculadoraImc.js` — orquestração
-- `src/assets/js/modules/dao.js` — persistência em `localStorage` (chave: `dados`)
-- `src/assets/js/modules/formulario.js` — tratamento de inputs e validação
-- `src/assets/js/modules/tabela.js` — renderização e handlers de ação
-- `webpack.config.js` — configuração de build / cópia para `docs/` / remoção de module script
-- `src/index.html` — template HTML (contém `<script type="module" src="assets/js/main.js"></script>` que é removido no bundle)
+- `src/assets/js/modules/dao.js` — persistência (`localStorage`, chave: `dados`)
+- `src/assets/js/modules/formulario.js` — inputs & validação (normalização de `,` ? `.`)
+- `src/assets/js/modules/tabela.js` — renderização e handlers (âncoras `excluir/{id}` e `editar/{id}`)
+- `src/index.html` — estrutura de form/tabela usada por selectores
+- `webpack.config.js` — build / cópia para `docs/`
 
-Boas práticas específicas (faça / evite)
+Observação final
 
-- Faça: recriar componentes como classes com campos privados e métodos pequenos; siga o padrão de import/export já existente.
-- Faça: rodar `npm run build` e abrir `dist/` ou `docs/` para validar mudanças antes de abrir PRs.
-- Evite: alterar a forma como `Dao` serializa os objetos (método `toJSON()` em `Imc`) sem migrar dados existentes.
-- Atenção: eslint proíbe `console.log` por padrão; há pelo menos um `console.log('nao')` em `Formulario` — alinhe alterações de lint se desejar habilitar checagem automática.
+- Não há testes automatizados nem CI configurado; prefira validação manual e inclua instruções no PR quando lidar com mudanças que possam quebrar dados existentes.
 
-Exemplos rápidos
-
-- Para adicionar um novo módulo (comportamento): coloque em `src/assets/js/modules/`, `export class Nome {}`, importe em `main.js` ou `calculadoraImc.js`.
-- Para limpar dados de teste no navegador: `localStorage.removeItem('dados')` no console.
-
-Notas finais
-
-- Não há testes automáticos nem CI configurado neste repositório — priorize validação manual ao enviar PRs.
-
-Se algo aqui estiver incompleto ou você quer que eu detalhe um trecho (por exemplo, adicionar checks de lint/CI ou instruções para deploy GH Pages), me diga qual parte preferiria expandir.
+Quer que eu estenda isso com um exemplo de template de PR (títulos, checks automáticos sugeridos) ou adicione um script `npm run lint` no `package.json`?
