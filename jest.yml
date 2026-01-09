@@ -1,0 +1,16 @@
+name: Jest Tests
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22" # Use a relevant Node.js version
+      - name: Install dependencies
+        run: npm install
+      - name: Run Jest tests
+        run: npm run test:unit
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
