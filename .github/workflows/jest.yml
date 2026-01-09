@@ -12,5 +12,3 @@ jobs:
         run: npm install
       - name: Run Jest tests
         run: npm run test:unit
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
