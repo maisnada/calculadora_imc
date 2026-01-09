@@ -1,2 +1,0 @@
-#node scripts/update-copilot-instructions.js "$1"
-echo "HOOK commit-msg EXECUTADO" > /tmp/husky-test.txt
