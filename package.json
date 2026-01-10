@@ -10,8 +10,7 @@
     "test:e2e:full": "playwright test --project=full",
     "build": "webpack --mode production",
     "build:verify": "npm run test:unit && npm run build && npm run test:e2e:smoke",
-    "dev": "webpack --mode development --watch",
-    "buildf": "webpack --mode production"
+    "dev": "webpack --mode development --watch"
   },
   "repository": {
     "type": "git",
