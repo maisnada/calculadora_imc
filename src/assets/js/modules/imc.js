@@ -6,6 +6,7 @@ export class Imc {
   #altura;
   #indice;
   #classificacao;
+  #percentual;
 
   constructor(id, nome, peso, altura) {
     this.#id = id;
@@ -47,8 +48,12 @@ export class Imc {
     }
   }
 
-  #percentual(valor) {
+  #calcularPorcentagem(valor) {
     return Math.round((valor / this.#peso) * 1000) / 10;
+  }
+
+  #calcularPercentuais() {
+    this.#percentual = this.#calcularPorcentagem(this.#peso);
   }
 
   get id() {

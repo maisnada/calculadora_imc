@@ -17,4 +17,19 @@ describe("Classe Imc", () => {
     expect(imc.indice).toBeLessThanOrEqual(29.9);
     expect(imc.classificacao).toBe("Sobrepeso");
   });
+
+  test("Deve classificar como Obesidade Grau I para IMC entre 30 e 34.9", () => {
+    const imc = new Imc(3, "Carlos", 90, 1.7);
+    expect(imc.indice).toBeGreaterThanOrEqual(30);
+    expect(imc.indice).toBeLessThanOrEqual(34.9);
+    expect(imc.classificacao).toBe("Obesidade Grau I");
+  });
+
+  test("Deve classificar como Obesidade Grau II para IMC entre 35 e 39.9", () => {
+    // Ex.: altura 1.70m, peso 105kg -> IMC ? 36.33 (Obesidade Grau II)
+    const imc = new Imc(4, "Ana", 105, 1.7);
+    expect(imc.indice).toBeGreaterThanOrEqual(35);
+    expect(imc.indice).toBeLessThanOrEqual(39.9);
+    expect(imc.classificacao).toBe("Obesidade Grau II");
+  });
 });

@@ -6,7 +6,7 @@
   "scripts": {
     "test:unit": "jest --coverage",
     "start:e2e": "webpack serve --mode production --port 3000",
-    "test:e2e:smoke": "playwright test --project=smoke",
+    "test:e2e:smoke": "playwright test --project=smoke --headed",
     "test:e2e:full": "playwright test --project=full",
     "build": "webpack --mode production",
     "build:verify": "npm run test:unit && npm run build && npm run test:e2e:smoke",
